@@ -1,0 +1,118 @@
+import sys
+
+from PyQt6.QtWidgets import (QMainWindow, QApplication,
+    QLabel, QVBoxLayout, QHBoxLayout, QWidget, 
+    QComboBox, QListWidget, QTreeWidget, QTreeWidgetItem,
+    QPushButton, QProgressBar, QColorDialog, QFileDialog,
+    QMdiArea, QMdiSubWindow
+)
+
+from PyQt6.QtWidgets import QMessageBox  
+
+import misc as Misc
+
+import modelview as mv
+import pandas as pd
+
+import database as Database
+import dea as DEA
+
+import os
+
+from PyQt6.QtCore import Qt
+
+# creates the main display window to which the subwindows are attached
+class DashboardWindow(QWidget):
+    
+    # initialize window
+    def __init__(self, window):
+        super(DashboardWindow, self).__init__()
+        self.mdi_parent = window
+
+        # creates main layout as QVBoxLayout
+        mainLayout = QVBoxLayout()
+        
+
+        self.athleteTree = QTreeWidget()
+        self.analyzeBtn = QPushButton("Analyze")
+        self.analyzeBtn.clicked.connect(self.analyze)
+        mainLayout.addWidget(QLabel("Athlete"))
+        mainLayout.addWidget(self.athleteTree)
+        mainLayout.addWidget(self.analyzeBtn)
+        self.setLayout(mainLayout)
+        
+    # open database file as input
+    def open_database(self):
+        fname = None
+        folder = os.path.dirname(os.path.realpath(__file__))
+        fname, ok = QFileDialog.getOpenFileName(self, 'Open file',
+                                folder, 'Sqlite3 database files (*.db)')
+        
+        if fname:
+            self.mdi_parent.enable_access(True)
+
+            self.database = Database(fname)
+
+            self.initialize_dashboard()
+    
+    # show connection data in a window
+    def show_data_window(self):
+        data, fields = self.database.get_data()
+        data = pd.DataFrame(data, columns = fields)
+        win = mv.TableViewWindow(data, 'Connections')
+        self.mdi_parent.add_subwindow(win, 'data')
+    
+    # exit application
+    def exit_app(self):
+        response = Misc.exit_message('Are you sure you want to exit?', 'Exit App')
+        if response:
+            sys.exit()
+    
+    # show dashboard
+    def show_dashboard(self):
+        self.mdi_parent.dashboard.showMaximized()
+        
+    # initializes dashboard
+    def initialize_dashboard(self):
+        self.data, self.fields = self.database.get_data()
+        self.input = self.fields[1:9]
+        self.output = self.fields[9:]
+        self.model = DEA(self.data, self.fields, self.inputs, self.outputs)
+        
+    # analyzes data
+    def analyze(self):  
+        self.show_dashboard() 
+        self.athleteTree.clear()
+        
+        for i in range(len(self.data)):
+            name, eff = self.model.run_dea(i)
+            athtwi = QTreeWidgetItem()
+            athtwi.setText(0:.2f.format({name}:{eff*100}))
+
+            self.athleteTree.addTopLevelItem(athtwi)
+            
+            inputtwi = QTreeWidgetItem()
+            inputtwi.setText(0, 'input')
+            athtwi.addChild(inputtwi)
+
+            for n in self.input:
+                j = self.fields.index(n)
+                value = self.data[i][j]
+
+                current_input = QTreeWidgetItem()
+                current_input.setText(0:.2f.format({n}:{value}))
+                
+                inputtwi.addChild(current_input)
+            
+            outputtwi = QTreeWidgetItem()
+            outputtwi.setText('output')
+            athtwi.addChild(outputtwi)
+
+            for b in self.output():
+                j = self.fields.index(b)
+                value = self.data[i][j]
+                current_output = QTreeWidgetItem()
+                current_output.setText(0:.2f.format({b}:{value}))
+                
+                outputtwi.addChild(current_output)
+     
