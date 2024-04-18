@@ -1,0 +1,76 @@
+
+'''
+PR2 assignment
+PM04 Group 
+:D
+'''
+
+import sys
+from PyQt6.QtWidgets import (QMainWindow, QApplication,
+    QLabel, QVBoxLayout, QHBoxLayout, QWidget, 
+    QComboBox, QListWidget, QTreeWidget, QTreeWidgetItem,
+    QPushButton, QProgressBar, QColorDialog, QFileDialog,
+    QMdiArea, QMdiSubWindow
+)
+
+from PyQt6.QtWidgets import QMessageBox  
+
+# from itertools import groupby
+# import numpy as np
+# import pandas as pd
+
+import menutoolbar as mt
+import dashboard as DashboardWindow
+import os
+
+from PyQt6.QtCore import Qt
+
+# defines the main window for the application
+class MainWindow(QMainWindow):
+    
+    # initialize main window
+    def __init__(self):
+        super(MainWindow, self).__init__()
+        self.setWindowTitle("Social Network")
+
+        self.mdi = QMdiArea()
+        self.setCentralWidget(self.mdi)
+
+        # subwindows dictionary
+        self.subwindows = {'dashboard': None, 'data': None}
+        
+        # dashboard window
+        self.dashboard = DashboardWindow(self)
+        self.add_subwindow(self.dashboard, 'dashboard')
+
+        # menu and toolbar
+        self.menutoolbar = mt.MenuToolbar(self)
+        self.enable_access(False)
+
+    # add subwindow and add it to the subwindows dictionary
+    def add_subwindow(self, window, name):
+        if self.subwindows[name]:
+            self.subwindows[name].close()
+        sub = QMdiSubWindow()
+        sub.setWidget(window)
+        sub.setWindowFlags(Qt.WindowType.CustomizeWindowHint)
+        sub.setWindowTitle(name)
+        self.mdi.addSubWindow(sub)
+        self.subwindows[name] = sub
+        sub.showMaximized()
+    
+    # enable controls
+    def enable_access(self, val):
+        self.dashboard.setEnabled(val)
+        self.menutoolbar.toolbar.setEnabled(val)
+        # self.menutoolbar.network_menu.setEnabled(val)
+        self.menutoolbar.data_menu.setEnabled(val)
+        # self.menutoolbar.analyze_menu.setEnabled(val)
+        self.menutoolbar.analyze_menu.setEnabled(val)
+               
+
+app = QApplication(sys.argv)
+window = MainWindow()
+window.show()
+app.exec()
+
