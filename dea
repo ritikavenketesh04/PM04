@@ -1,0 +1,56 @@
+from scipy.optimize import linprog
+import numpy as np
+import math
+
+class DEA:
+    
+    def __init__(self, data, fields, input, output):
+        
+        self.data = data
+        self.fields = fields
+        self.input = input
+        self.output = output
+        
+        self.Aub = np.zeros((len(self.data), len(self.fields)-1))
+        self.bub = np.zeros(len(self.data))
+            
+        for i in range(len(self.data)):
+            
+            for x in self.output:
+                j = self.fields.index(x)
+                self.Aub[i][j-1] = self.data[i][j]
+                
+            for x in self.input:
+                j = self.fields.index(x)
+                self.Aub[i][j-1] = -self.data[i][j]
+                
+        self.bnds = []
+        for i in range(len(self.fields)-1):
+            self.bnds.append((0, None))
+            
+    def run_dea(self, index):
+        
+        self.Aeq = np.zeros((1, len(self.fields)-1))
+        self.beq = [1]
+        self.c = np.zeros(len(self.fields)-1)
+        
+        self.name = self.data[index][0]       
+        for x in self.output:
+            j = self.fields.index(x)
+            self.c[j-1] = -self.data[index][j]
+            
+        for x in self.input:
+            j = self.fields.index(x)
+            self.Aeq[0][j-1] = self.data[index][j]        
+            
+        res = linprog(self.c, A_ub=self.Aub, b_ub=self.bub, 
+                      A_eq=self.Aeq, b_eq=self.beq, bounds=self.bnds)
+        
+        self.eff = -res.fun
+        
+        return self.name, self.eff
+                
+                
+            
+        
+        
