@@ -1,0 +1,65 @@
+from PyQt6.QtWidgets import (QToolBar, QStatusBar)
+from PyQt6.QtGui import (QAction, QIcon)
+from PyQt6.QtCore import Qt
+import os
+
+# sets up main toolbar and menu bar for application
+class MenuToolbar():
+
+    # initialize the toolbar instance
+    def __init__(self, window):
+        
+        self.toolbar = QToolBar('MainToolBar')
+        self.toolbar.setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonTextUnderIcon)
+        # self. toolbar.setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonFollowStyle) # default
+        
+        self.folder = os.path.dirname(os.path.realpath(__file__)) + '/icons/'
+        
+        # menu, toolbar, statusbar
+        self.menu = window.menuBar()
+        window.addToolBar(self.toolbar)
+        window.setStatusBar(QStatusBar(window))
+        
+        # file menu and toolbar buttons
+        self.file_menu = self.menu.addMenu('&File')
+        
+        self.add_button('&Open', 'Open file', 'icon.open.png',
+                        self.file_menu, window, window.dashboard.open_database)       
+        self.add_button('&Exit', 'Exit file', 'icon.exit.png',
+                        self.file_menu, window, window.dashboard.exit_app)
+        
+        self.toolbar.addSeparator()
+        
+        # network menu and toolbar buttons
+        
+        # data menu and toolbar buttons
+        self.data_menu = self.menu.addMenu('&Data')
+            
+        self.add_button('&Data', 'Show data', 'icon.data.png', 
+                        self.data_menu, window, window.dashboard.show_data_window)  
+        self.add_button('&Summary', 'Show summary', 'icon.summary.png',
+                        self.data_menu, window, window.dashboard.show_summary_window)
+        self.add_button('&Dash', 'show dashboard', 'icon.dash.png', 
+                        self.data_menu, window, window.dashboard.show_dashboard)    
+        
+        self.toolbar.addSeparator()
+        
+        # add analyze menu
+        self.analyze_menu = self.menu.addMenu('&Analyze')
+        self.add_button('&Analyze', 'Analyze data', 'icon.analyze.png',
+                        self.analyze_menu, window, window.dashboard.analyze)
+        
+        self.toolbar.addSeparator()
+        
+        # analyze menu and toolbar buttons
+        
+        
+    
+    # adds a button to the toolbar and menu
+    def add_button(self, text, tip, file, menu, win, func):
+        btn = QAction(QIcon(self.folder + file), text, win)
+        btn.setStatusTip(tip)
+        self.toolbar.addAction(btn)
+        menu.addAction(btn)  
+        if func:
+            btn.triggered.connect(func)     
