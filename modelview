@@ -1,0 +1,105 @@
+from PyQt6.QtCore import(Qt, QAbstractListModel, QAbstractTableModel)
+from PyQt6.QtWidgets import(QVBoxLayout, QWidget, QTableView)
+import pandas as pd
+
+# list model for combo box
+class ListModel(QAbstractListModel):
+
+    # initialize list model instance
+    def __init__(self, *args, data=None, **kwargs):
+        super(ListModel, self).__init__()
+        self.data = data or None
+    
+    # retrieve data for a given index and role
+    def data(self, index, role):
+        if role == Qt.ItemDataRole.DisplayRole:
+            text = self.data[index.row()]
+            return text
+    
+    # returns the number of rows in the model
+    def rowCount(self, index):
+        return len(self.data)
+    
+    # adds a new item to the model's data list
+    def add(self, newItem):
+        self.data.append(newItem)
+        self.layoutChanged.emit()
+    
+    # deletes an item at the specified index from the model's data list
+    def delete(self, index):
+        del self.data[index]
+        self.layoutChanged.emit()
+        
+# table model for 2D (tabular) data
+class TableModel(QAbstractTableModel):
+
+    # initializes the the TableModel instance with the provided data
+    def __init__(self, data):
+        super(TableModel, self).__init__()
+        self._data = data
+    
+    # gets data given an index and role
+    def data(self, index, role):
+        if role == Qt.ItemDataRole.DisplayRole:
+            return self._data[index.row()][index.column()]
+    
+    # gets the number of rows (length of outer list)
+    def rowCount(self, index):
+        return len(self._data)
+    
+    # returns the number of columns in the model (length of inner list)
+    def columnCount(self, index):
+        return len(self._data[0])
+    
+# display data in QTableView in QWidget
+class TableViewWindow(QWidget):
+    # initialize tableview window class
+    def __init__(self, data, title):
+        super(TableViewWindow, self).__init__()
+        
+        self.setMinimumHeight(200)
+        self.setMinimumWidth(400)
+        self.setWindowTitle(title)
+        
+        self.table = QTableView() # visual control
+        
+        if isinstance(data, pd.DataFrame):
+            self.model = DataFrameModel(data)
+        else:
+            self.model = TableModel(data)
+        
+        # self.model = TableModel(data)
+        self.table.setModel(self.model)
+        layout = QVBoxLayout()
+        layout.addWidget(self.table)
+        self.setLayout(layout)
+        
+# table model for Pandas DataFrame
+class DataFrameModel(QAbstractTableModel):
+    
+    # initialize data frame model class
+    def __init__(self, data):
+        super(DataFrameModel, self).__init__()
+        self._data = data
+        
+    # gets data given an index and role
+    def data(self, index, role):
+        if role == Qt.ItemDataRole.DisplayRole:
+            value = self._data.iloc[index.row()][index.column()]
+            return str(value)
+
+    # gets the number of rows
+    def rowCount(self, index):
+        return self._data.shape[0]
+    
+    # gets the number of columns
+    def columnCount(self, index):
+        return self._data.shape[1]
+    
+    # returns the section relevant to the given section, orientation, and role
+    def headerData(self, section, oritentation, role):
+        if role == Qt.ItemDataRole.DisplayRole:
+            if oritentation == Qt.Orientation.Horizontal:
+                return str(self._data.columns[section])
+            if oritentation == Qt.Orientation.Vertical:
+                return str(self._data.index[section])
