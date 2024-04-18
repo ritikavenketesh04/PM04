@@ -1,0 +1,24 @@
+import sqlite3
+
+# define database
+class Database():
+
+    # initialize class
+    def __init__(self, filename):
+        if not filename == None:
+            self.fname = filename
+        else:
+            return None
+
+    # function to get data from file
+    def get_data(self):
+        con = sqlite3.connect(self.file)
+        cur = con.cursor()
+        res = cur.execute("SELECT * FROM Arcs")
+        data = res.fetchall()
+        fields = []
+        for x in cur.description:
+            fields.append(x[0])
+        fields = [x[0] for x in cur.description]
+        return data, fields
+    
