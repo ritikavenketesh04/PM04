@@ -1,0 +1,42 @@
+from PyQt6.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QLabel)
+from PyQt6.QtGui import QPixmap
+import os
+
+class TutorialWindow(QWidget):
+
+    def __init__(self):
+        super(TutorialWindow,self).__init__()
+        
+    def get_label(self, text, style):
+        label = QLabel()
+        label.setText(text)
+        label.setStyleSheet(style)
+        label.setWordWrap(True)
+        return label
+
+
+
+    def get_image(self,filename):
+        label = QLabel()
+        filepath = os.path.dirname(os.path.realpath(__file__)) + '/icons/' + filename
+        pixmap = QPixmap(filepath)
+        label.setPixmap(pixmap.scaled(20, 20))
+
+        return label
+        
+    
+    def insert_title(self, title, image, layout):
+        style = "QLabel { color: red; border-width: 1px; font: bold 20px }"
+        current_layout = QHBoxLayout()
+        current_image = self.get_image(image)
+        current_layout.addWidget(current_image)
+        current_label = self.get_label(title,style)
+        current_layout.addWidget(current_label)
+        current_layout.addStretch()
+        layout.addLayout(current_layout)
+
+    def insert_text(self, text, layout):
+        style = "color: black; font-size: 13px; font-weight: normal;"
+        label = self.get_label(text, style)
+        layout.addWidget(label)
+
