@@ -20,10 +20,12 @@ from PyQt6.QtWidgets import QMessageBox
 # import pandas as pd
 
 import menutoolbar as mt
-import dashboard as DashboardWindow
+import dashboard 
 import os
 
 from PyQt6.QtCore import Qt
+
+from login import LoginWindow
 
 # defines the main window for the application
 class MainWindow(QMainWindow):
@@ -33,6 +35,9 @@ class MainWindow(QMainWindow):
         super(MainWindow, self).__init__()
         self.setWindowTitle("Social Network")
 
+        self.loginwin = LoginWindow()
+        self.loginwin.show()
+
         self.mdi = QMdiArea()
         self.setCentralWidget(self.mdi)
 
@@ -40,7 +45,7 @@ class MainWindow(QMainWindow):
         self.subwindows = {'dashboard': None, 'data': None}
         
         # dashboard window
-        self.dashboard = DashboardWindow(self)
+        self.dashboard = dashboard.DashboardWindow(self)
         self.add_subwindow(self.dashboard, 'dashboard')
 
         # menu and toolbar
@@ -71,6 +76,6 @@ class MainWindow(QMainWindow):
 
 app = QApplication(sys.argv)
 window = MainWindow()
-window.show()
+window.showMaximized()
 app.exec()
 
