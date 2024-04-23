@@ -87,7 +87,7 @@ class DashboardWindow(QWidget):
         for i in range(len(self.data)):
             name, eff = self.model.run_dea(i)
             athtwi = QTreeWidgetItem()
-            athtwi.setText(0:.2f.format({name}:{eff*100}))
+            athtwi.setText(0,name + " : " + '{0:.2f}'.format(eff*100))
 
             self.athleteTree.addTopLevelItem(athtwi)
             
@@ -100,7 +100,7 @@ class DashboardWindow(QWidget):
                 value = self.data[i][j]
 
                 current_input = QTreeWidgetItem()
-                current_input.setText(0:.2f.format({n}:{value}))
+                current_input.setText(0,n + " : " + '{0:.2f}'.format(value))
                 
                 inputtwi.addChild(current_input)
             
@@ -112,7 +112,6 @@ class DashboardWindow(QWidget):
                 j = self.fields.index(b)
                 value = self.data[i][j]
                 current_output = QTreeWidgetItem()
-                current_output.setText(0:.2f.format({b}:{value}))
+                current_output.setText(0,b + " : " + '{0:.2f}'.format(value))
                 
                 outputtwi.addChild(current_output)
-     
