@@ -1,23 +1,14 @@
-
 '''
-PR2 assignment
 PM04 Group 
 :D
 '''
 
 import sys
 from PyQt6.QtWidgets import (QMainWindow, QApplication,
-    QLabel, QVBoxLayout, QHBoxLayout, QWidget, 
-    QComboBox, QListWidget, QTreeWidget, QTreeWidgetItem,
-    QPushButton, QProgressBar, QColorDialog, QFileDialog,
     QMdiArea, QMdiSubWindow
 )
 
 from PyQt6.QtWidgets import QMessageBox  
-
-# from itertools import groupby
-# import numpy as np
-# import pandas as pd
 
 import menutoolbar as mt
 import dashboard 
@@ -34,20 +25,23 @@ class MainWindow(QMainWindow):
     def __init__(self):
         super(MainWindow, self).__init__()
         self.setWindowTitle("Social Network")
-
+        
         self.loginwin = LoginWindow()
         self.loginwin.show()
-
+        
         self.mdi = QMdiArea()
         self.setCentralWidget(self.mdi)
-
+        
         # subwindows dictionary
-        self.subwindows = {'dashboard': None, 'data': None}
+        self.subwindows = {'dashboard': None, 'data': None, 'visualize': None, 'tutorial': None}
+        self.subwindows['about'] = None
+
+        
         
         # dashboard window
         self.dashboard = dashboard.DashboardWindow(self)
         self.add_subwindow(self.dashboard, 'dashboard')
-
+        
         # menu and toolbar
         self.menutoolbar = mt.MenuToolbar(self)
         self.enable_access(False)
@@ -72,10 +66,11 @@ class MainWindow(QMainWindow):
         self.menutoolbar.data_menu.setEnabled(val)
         # self.menutoolbar.analyze_menu.setEnabled(val)
         self.menutoolbar.analyze_menu.setEnabled(val)
-               
+             
 
 app = QApplication(sys.argv)
 window = MainWindow()
 window.showMaximized()
 app.exec()
+
 
