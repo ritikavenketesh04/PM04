@@ -18,8 +18,13 @@ import database as Database
 import dea as DEA
 
 import os
+from visualize import ChartWindow
 
 from PyQt6.QtCore import Qt
+
+from tutorial import TutorialWindow
+#from main import MainWindow
+from about import AboutWindow
 
 # creates the main display window to which the subwindows are attached
 class DashboardWindow(QWidget):
@@ -83,6 +88,9 @@ class DashboardWindow(QWidget):
     def analyze(self):  
         self.show_dashboard() 
         self.athleteTree.clear()
+
+        self.eff_dict = []
+        
         
         for i in range(len(self.data)):
             name, eff = self.model.run_dea(i)
@@ -94,7 +102,9 @@ class DashboardWindow(QWidget):
             inputtwi = QTreeWidgetItem()
             inputtwi.setText(0, 'input')
             athtwi.addChild(inputtwi)
-
+            
+            if eff < 0.999999:
+                self.eff_dict[name] = 100 * eff
             for n in self.input:
                 j = self.fields.index(n)
                 value = self.data[i][j]
@@ -115,3 +125,26 @@ class DashboardWindow(QWidget):
                 current_output.setText(0,b + " : " + '{0:.2f}'.format(value))
                 
                 outputtwi.addChild(current_output)
+
+    def visualize(self):
+        xval = sorted(self.eff_dict.keys(), key=lambda x: self.eff_dict[x])
+        yval = list(self.eff_dict.values())
+        chart_data = pd.DataFrame({'Efficiency': yval}, index=xval)
+        chart_input = {'data': chart_data, 
+                       'type': 'Bar', 
+                       'xlabel': 'Athletes', 
+                       'ylabel': 'Efficiency', 
+                       'title': 'Athlete Efficienty'}
+        window = ChartWindow(chart_input, 'Athlete Efficiency')
+        self.mdi_parent.add_subwindow(window, 'visualize')
+
+    def tutorial(self):
+        window = TutorialWindow()
+        self.mdi_parent.add_subwindow(window, 'Tutorial')
+        
+    def about(self):
+        window = AboutWindow()
+        self.mdi_parent.add_subwindow(window, 'About')
+        
+        
+
