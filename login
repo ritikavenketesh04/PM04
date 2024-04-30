@@ -70,8 +70,6 @@ class LoginWindow(QWidget):
         response = misc.exit_message('are you sure you want to exit?', 'Exit App')
         if response:
             sys.exit()
-    
-    
 
 
 
