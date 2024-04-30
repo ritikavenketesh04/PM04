@@ -4,12 +4,9 @@ import os
 import misc as misc
 from PyQt6.QtGui import QPixmap
 from PyQt6 import QtCore
-from PyQt6.QtWidgets import (QMainWindow, QApplication,
-    QLabel, QVBoxLayout, QHBoxLayout, QWidget, 
-    QComboBox, QListWidget, QTreeWidget, QTreeWidgetItem,
-    QPushButton, QProgressBar, QColorDialog, QFileDialog,
-    QMdiArea, QMdiSubWindow, QToolBar, QStatusBar, QLineEdit
-)
+from PyQt6.QtWidgets import (QLabel, QVBoxLayout, QHBoxLayout, QWidget, 
+    QPushButton, QLineEdit)
+
 # creates login window class
 class LoginWindow(QWidget):
     # initialize window
@@ -25,8 +22,9 @@ class LoginWindow(QWidget):
         self.loginButton = QPushButton("Login")
         self.loginButton.clicked.connect(self.login_click)
         self.cancelButton = QPushButton("Cancel")
+        self.cancelButton.clicked.connect(self.exit_app)
         self.passwordEditLine.setEchoMode(QLineEdit.EchoMode.Password)
-        bottomrow.addWiget(self.loginButton)
+        bottomrow.addWidget(self.loginButton)
         bottomrow.addWidget(self.cancelButton)
 
         mainlayout = QVBoxLayout()
@@ -72,6 +70,7 @@ class LoginWindow(QWidget):
         response = misc.exit_message('are you sure you want to exit?', 'Exit App')
         if response:
             sys.exit()
+    
     
 
 
