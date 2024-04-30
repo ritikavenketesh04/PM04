@@ -6,7 +6,41 @@ class TutorialWindow(QWidget):
 
     def __init__(self):
         super(TutorialWindow,self).__init__()
+
+        # add layout and titles and texts for each button
+        mainLayout = QVBoxLayout()
+        self.insert_title('Open', 'icon.open.png', mainLayout)
+        opentext = 'This button opens the file needed to analyze data'
+        self.insert_text(opentext, mainLayout)
         
+        self.insert_title('Exit', 'icon.exit.png', mainLayout)
+        exitText = 'This button exits the file needed to analyze data'
+        self.insert_text(exitText, mainLayout)
+        
+        self.insert_title('Analyze', 'icon.analyze.png', mainLayout)
+        analyzeText = 'This button analyzes data'
+        self.insert_text(analyzeText, mainLayout)
+
+        self.insert_title('Data', 'icon.data.png', mainLayout)
+        dataText = 'This button shows all the data that will be used'
+        self.insert_text(dataText, mainLayout)
+
+        self.insert_title('Dash', 'icon.dash.png', mainLayout)
+        dashText = 'This button shows the entire dashboard for users to view all options'
+        self.insert_text(dashText, mainLayout)
+
+        self.insert_title('Visualize', 'icon.visualize.png', mainLayout)
+        visualizeText = 'This button helps visualizes the data by creating graphs' 
+        self.insert_text(visualizeText, mainLayout)
+
+        self.insert_title('Tutorial', 'icon.tutorial.png', mainLayout)
+        tutorialText = 'This button gives you a tutorial on what other buttons do'
+        self.insert_text(tutorialText, mainLayout)
+        
+        mainLayout.addStretch()
+        self.setLayout(mainLayout)
+    
+    # create function to get label
     def get_label(self, text, style):
         label = QLabel()
         label.setText(text)
@@ -14,8 +48,7 @@ class TutorialWindow(QWidget):
         label.setWordWrap(True)
         return label
 
-
-
+    # create function to get image of icons
     def get_image(self,filename):
         label = QLabel()
         filepath = os.path.dirname(os.path.realpath(__file__)) + '/icons/' + filename
@@ -24,7 +57,7 @@ class TutorialWindow(QWidget):
 
         return label
         
-    
+    # create function to insert title
     def insert_title(self, title, image, layout):
         style = "QLabel { color: red; border-width: 1px; font: bold 20px }"
         current_layout = QHBoxLayout()
@@ -35,8 +68,11 @@ class TutorialWindow(QWidget):
         current_layout.addStretch()
         layout.addLayout(current_layout)
 
+    # create function to insert text
     def insert_text(self, text, layout):
         style = "color: black; font-size: 13px; font-weight: normal;"
         label = self.get_label(text, style)
         layout.addWidget(label)
+
+
 
